@@ -198,20 +198,23 @@ type();
 
         $(window).on('scroll', function() {
           const currentScroll = $(window).scrollTop();
+          const scrollingDown = currentScroll > lastScrollTop;
           lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-
+        
           const windowHeight = window.innerHeight;
-
+        
           $('.js-timeline_item').each(function() {
             const rect = this.getBoundingClientRect();
             let triggerPoint;
-
+        
             if ($(window).width() < 768) {
-              triggerPoint = 0.3; // lower value = earlier activation/deactivation
+              // small screens
+              triggerPoint = scrollingDown ? 0.8 : 0.3; // down = appear faster, up = disappear sooner
             } else {
-              triggerPoint = 0.5; // larger screens
+              // large screens
+              triggerPoint = 0.5;
             }
-
+        
             if (rect.top < windowHeight * triggerPoint) {
               $(this).addClass('js-ag-active');
             } else {
