@@ -71,22 +71,23 @@ observerHeader.observe(home);
 
 
 // move home section images
-let mountain_back = document.getElementById("mountain_back");
-let mountain_moon = document.getElementById("mountain_moon");
-let mountain_middle = document.getElementById("mountain_middle");
-let mountain_front = document.getElementById("mountain_front");
-let greeting = document.getElementById("greeting");
+let lastScrollYHome = 0;
 
 window.addEventListener('scroll', function() {
-    var value = window.scrollY;
+  lastScrollYHome = window.scrollY;
+  requestAnimationFrame(updateParallax);
+}, { passive: true });
 
-    mountain_back.style.top = -value * 0.5 + 'px';
-    mountain_moon.style.left = -value * 0.9 + 'px';
-    mountain_moon.style.top = -value * 0.3 + 'px';
-    mountain_middle.style.top = -value * 0.15 + 'px';
-    mountain_front.style.top = value * 0.15 + 'px';
-    greeting.style.top = value * 1 + 'px';
-})
+function updateParallax() {
+  let value = lastScrollYHome;
+
+  mountain_back.style.top = -value * 0.5 + 'px';
+  mountain_moon.style.left = -value * 0.9 + 'px';
+  mountain_moon.style.top = -value * 0.3 + 'px';
+  mountain_middle.style.top = -value * 0.15 + 'px';
+  mountain_front.style.top = value * 0.15 + 'px';
+  greeting.style.top = value * 1 + 'px';
+}
 
 
 // typewriter effect
@@ -192,7 +193,15 @@ type();
       agTimelineItem.each(function () {
         var agTop = $(this).find(agTimelinePoint).offset().top;
 
-        (agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
+        // activate box earlier on smartphone/smaller screens
+        var triggerPoint = $(window).width() < 768 ? 0.8 : 0.5;
+
+        (agTop + agPosY - $(window).scrollTop()) < agPosY + triggerPoint * agOuterHeight 
+          ? $(this).addClass('js-ag-active') 
+          : $(this).removeClass('js-ag-active');
+
+
+        //(agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
       })
     }
 

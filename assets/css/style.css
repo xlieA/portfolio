@@ -152,9 +152,6 @@ section {
     min-height: 100vh; /* cover entire page */
     padding: 10rem 15%; /* match with header and all other sections */
 }
-h2 {
-  font-size: clamp(1.0rem, 5vw, 2.5rem);
-}
 .home {
     position: relative;
     width: 100%;
@@ -331,7 +328,7 @@ h2 {
 
 .heading {
     text-align: left;
-    font-size: 7rem;
+    font-size: clamp(2.5rem, 20vw, 7rem);
     margin: 5rem 0;
 }
 
