@@ -71,22 +71,23 @@ observerHeader.observe(home);
 
 
 // move home section images
-let mountain_back = document.getElementById("mountain_back");
-let mountain_moon = document.getElementById("mountain_moon");
-let mountain_middle = document.getElementById("mountain_middle");
-let mountain_front = document.getElementById("mountain_front");
-let greeting = document.getElementById("greeting");
+let lastScrollYHome = 0;  // improve scrolling on smartphones
 
 window.addEventListener('scroll', function() {
-    var value = window.scrollY;
+  lastScrollYHome = window.scrollY;
+  requestAnimationFrame(updateParallax);
+}, { passive: true });
 
-    mountain_back.style.top = -value * 0.5 + 'px';
-    mountain_moon.style.left = -value * 0.9 + 'px';
-    mountain_moon.style.top = -value * 0.3 + 'px';
-    mountain_middle.style.top = -value * 0.15 + 'px';
-    mountain_front.style.top = value * 0.15 + 'px';
-    greeting.style.top = value * 1 + 'px';
-})
+function updateParallax() {
+  let value = lastScrollYHome;
+
+  mountain_back.style.top = -value * 0.5 + 'px';
+  mountain_moon.style.left = -value * 0.9 + 'px';
+  mountain_moon.style.top = -value * 0.3 + 'px';
+  mountain_middle.style.top = -value * 0.15 + 'px';
+  mountain_front.style.top = value * 0.15 + 'px';
+  greeting.style.top = value * 1 + 'px';
+}
 
 
 // typewriter effect
@@ -136,6 +137,30 @@ type();
 
 
 // timeline animation
+let lastScrollTop = 0;
+let ticking = false;
+let scrollingDown = true;
+
+window.addEventListener('scroll', function() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      const currentScroll = window.scrollY;
+
+      if (currentScroll > lastScrollTop) {
+        scrollingDown = true;
+      } else if (currentScroll < lastScrollTop) {
+        scrollingDown = false;
+      }
+
+      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // avoid negative values
+      ticking = false;
+    });
+
+    ticking = true;
+  }
+});
+
+
 (function ($) {
   $(function () {
     $(window).on('scroll', function () {
@@ -194,6 +219,16 @@ type();
 
         // activate box earlier on smartphone/smaller screens
         var triggerPoint = $(window).width() < 768 ? 0.8 : 0.5;
+        if ($(window).width < 768) {
+          if (scrollingDown) {
+            triggerPoint = 0.8;
+          } else {
+            triggerPoint = 0.2;
+          }
+        }
+        else {
+          triggerPoint = 0.5;
+        }
 
         agTimelineItem.each(function () {
           var rect = this.getBoundingClientRect();

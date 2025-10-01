@@ -328,7 +328,7 @@ section {
 
 .heading {
     text-align: left;
-    font-size: clamp(2.5rem, 7vw, 7rem);
+    font-size: clamp(2.5rem, 8vw, 7rem);
     margin: 5rem 0;
 }
 
@@ -1352,8 +1352,10 @@ section {
 
 /* smartphone/tablet */
 @media (max-width: 768px) {
+    .experience-container {
+        row-gap: 8.5rem;
+    }
     .experience-data {
-        
         opacity: 1 !important;
         transition: none !important;
         animation: none !important;
@@ -1362,7 +1364,7 @@ section {
         bottom: -3rem;        /* sits inside the box */
     }
     .experience-data.big {
-        bottom: -5rem;        /* sits inside the box */
+        bottom: -7rem;        /* sits inside the box */
     }
     .experience-article {
         animation: none !important;
