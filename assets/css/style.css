@@ -328,7 +328,7 @@ section {
 
 .heading {
     text-align: left;
-    font-size: clamp(2.5rem, 20vw, 7rem);
+    font-size: clamp(2.5rem, 7vw, 7rem);
     margin: 5rem 0;
 }
 
@@ -413,8 +413,13 @@ section {
     color: var(--text-color);
     margin-bottom: .75rem;
 }
-.experience-article:hover .experience-data {
-    animation: show-data 1s forwards;
+.experience-article:hover .experience-data.small {
+    animation: show-data_small 1s forwards;
+    opacity: 1;
+    transition: opacity .3s;
+}
+.experience-article:hover .experience-data.big {
+    animation: show-data_big 1s forwards;
     opacity: 1;
     transition: opacity .3s;
 }
@@ -424,17 +429,28 @@ section {
 .experience-article:not(:hover) {
     animation: show-overflow 2s forwards;
 }
-.experience-article:not(:hover) .experience-data {
-    animation: remove-data 1s forwards;
+.experience-article:not(:hover) .experience-data.small {
+    animation: remove-data_small 1s forwards;
+}
+.experience-article:not(:hover) .experience-data.big {
+    animation: remove-data_big 1s forwards;
 }
 
 /* card animation */
-@keyframes show-data {
+@keyframes show-data_small {
     50% {
         transform: translateY(-10rem);
     }
     100% {
-        transform: translateY(-6.5rem);
+        transform: translateY(-8.5rem);
+    }
+}
+@keyframes show-data_big {
+    50% {
+        transform: translateY(-10rem);
+    }
+    100% {
+        transform: translateY(-5.5rem);
     }
 }
 @keyframes remove-overflow {
@@ -442,9 +458,20 @@ section {
         overflow: initial;
     }
 }
-@keyframes remove-data {
+@keyframes remove-data_small {
     0% {
-        transform: translateY(-6.5rem);
+        transform: translateY(-8.5rem);
+    }
+    50% {
+        transform: translateY(-10rem);
+    }
+    100% {
+        transform: translateY(.5rem);
+    }
+}
+@keyframes remove-data_big {
+    0% {
+        transform: translateY(-5.5rem);
     }
     50% {
         transform: translateY(-10rem);
@@ -1326,10 +1353,16 @@ section {
 /* smartphone/tablet */
 @media (max-width: 768px) {
     .experience-data {
-        bottom: -4rem;        /* sits inside the box */
+        
         opacity: 1 !important;
         transition: none !important;
         animation: none !important;
+    }
+    .experience-data.small {
+        bottom: -3rem;        /* sits inside the box */
+    }
+    .experience-data.big {
+        bottom: -5rem;        /* sits inside the box */
     }
     .experience-article {
         animation: none !important;
