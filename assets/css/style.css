@@ -328,7 +328,7 @@ section {
 
 .heading {
     text-align: left;
-    font-size: clamp(2.5rem, 8vw, 7rem);
+    font-size: clamp(4rem, 8vw, 7rem);
     margin: 5rem 0;
 }
 

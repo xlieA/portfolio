@@ -137,30 +137,6 @@ type();
 
 
 // timeline animation
-let lastScrollTop = 0;
-let ticking = false;
-let scrollingDown = true;
-
-window.addEventListener('scroll', function() {
-  if (!ticking) {
-    window.requestAnimationFrame(() => {
-      const currentScroll = window.scrollY;
-
-      if (currentScroll > lastScrollTop) {
-        scrollingDown = true;
-      } else if (currentScroll < lastScrollTop) {
-        scrollingDown = false;
-      }
-
-      lastScrollTop = currentScroll <= 0 ? 0 : currentScroll; // avoid negative values
-      ticking = false;
-    });
-
-    ticking = true;
-  }
-});
-
-
 (function ($) {
   $(function () {
     $(window).on('scroll', function () {
@@ -218,29 +194,31 @@ window.addEventListener('scroll', function() {
         var agTop = $(this).find(agTimelinePoint).offset().top;
 
         // activate box earlier on smartphone/smaller screens
-        var triggerPoint = $(window).width() < 768 ? 0.8 : 0.5;
-        if ($(window).width < 768) {
-          if (scrollingDown) {
-            triggerPoint = 0.8;
-          } else {
-            triggerPoint = 0.2;
-          }
-        }
-        else {
-          triggerPoint = 0.5;
-        }
+        let lastScrollTop = 0;
 
-        agTimelineItem.each(function () {
-          var rect = this.getBoundingClientRect();
-          var windowHeight = window.innerHeight;
+        $(window).on('scroll', function() {
+          const currentScroll = $(window).scrollTop();
+          lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
 
-          if (rect.top < windowHeight * triggerPoint) {
-            $(this).addClass('js-ag-active');
-          } else {
-            $(this).removeClass('js-ag-active');
-          }
+          const windowHeight = window.innerHeight;
+
+          $('.js-timeline_item').each(function() {
+            const rect = this.getBoundingClientRect();
+            let triggerPoint;
+
+            if ($(window).width() < 768) {
+              triggerPoint = 0.3; // lower value = earlier activation/deactivation
+            } else {
+              triggerPoint = 0.5; // larger screens
+            }
+
+            if (rect.top < windowHeight * triggerPoint) {
+              $(this).addClass('js-ag-active');
+            } else {
+              $(this).removeClass('js-ag-active');
+            }
+          });
         });
-
 
         //(agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
       })
