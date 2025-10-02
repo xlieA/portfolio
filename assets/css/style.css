@@ -204,6 +204,16 @@ section {
     z-index: 2;
 }
 
+#mountain_back,
+#mountain_moon,
+#mountain_middle,
+#mountain_front,
+#greeting{
+  will-change: transform, opacity;
+  transform: translateZ(0); /* force GPU compositing */
+}
+
+
 .aboutme {
     display: flex;
     justify-content: center;

@@ -71,15 +71,14 @@ observerHeader.observe(home);
 
 
 // move home section images
-let lastScrollYHome = 0;  // improve scrolling on smartphones
+let mountain_back = document.getElementById("mountain_back");
+let mountain_moon = document.getElementById("mountain_moon");
+let mountain_middle = document.getElementById("mountain_middle");
+let mountain_front = document.getElementById("mountain_front");
+let greeting = document.getElementById("greeting");
 
-window.addEventListener('scroll', function() {
-  lastScrollYHome = window.scrollY;
-  requestAnimationFrame(updateParallax);
-}, { passive: true });
-
-function updateParallax() {
-  let value = lastScrollYHome;
+/*window.addEventListener('scroll', function() {
+  var value = window.scrollY;
 
   mountain_back.style.top = -value * 0.5 + 'px';
   mountain_moon.style.left = -value * 0.9 + 'px';
@@ -87,6 +86,32 @@ function updateParallax() {
   mountain_middle.style.top = -value * 0.15 + 'px';
   mountain_front.style.top = value * 0.15 + 'px';
   greeting.style.top = value * 1 + 'px';
+})*/
+
+let ticking = false; // improve scrolling on smartphones
+
+function onScroll() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      handleParallaxMobile();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+$(window).on("scroll resize", onScroll);
+
+function handleParallaxMobile() {
+  const value = window.scrollY;
+
+  // parallax logic
+  mountain_back.style.top = -value * 0.5 + 'px';
+  mountain_moon.style.left = -value * 0.9 + 'px';
+  mountain_moon.style.top = -value * 0.3 + 'px';
+  mountain_middle.style.top = -value * 0.15 + 'px';
+  mountain_front.style.top = value * 0.15 + 'px';
+  greeting.style.top = value/2 * 1 + 'px';
 }
 
 
@@ -152,6 +177,7 @@ type();
       agTimelineLineProgress = $('.js-timeline_line-progress'),
       agTimelinePoint = $('.js-timeline-card_point-box'),
       agTimelineItem = $('.js-timeline_item'),
+      
       agOuterHeight = $(window).outerHeight(),
       agHeight = $(window).height(),
       f = -1,
@@ -192,35 +218,8 @@ type();
 
       agTimelineItem.each(function () {
         var agTop = $(this).find(agTimelinePoint).offset().top;
-
-        // activate box earlier on smartphone/smaller screens
-        let lastScrollTop = 0;
-
-        $(window).on('scroll', function() {
-          const currentScroll = $(window).scrollTop();
-          lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
-
-          const windowHeight = window.innerHeight;
-
-          $('.js-timeline_item').each(function() {
-            const rect = this.getBoundingClientRect();
-            let triggerPoint;
-
-            if ($(window).width() < 768) {
-              triggerPoint = 0.3; // lower value = earlier activation/deactivation
-            } else {
-              triggerPoint = 0.5; // larger screens
-            }
-
-            if (rect.top < windowHeight * triggerPoint) {
-              $(this).addClass('js-ag-active');
-            } else {
-              $(this).removeClass('js-ag-active');
-            }
-          });
-        });
-
-        //(agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
+        
+        (agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
       })
     }
 
@@ -231,9 +230,29 @@ type();
 
 
   });
-})
+}) (jQuery);
 
-(jQuery);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const items = document.querySelectorAll(".js-timeline_item");
+
+  const observerOptions = {
+    threshold: 0.3 // trigger when 30% of item is visible
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("js-ag-active");
+      } else {
+        entry.target.classList.remove("js-ag-active"); // remove when leaving
+      }
+    });
+  }, observerOptions);
+
+  items.forEach(item => observer.observe(item));
+});
+
 
 
 // skill bar animation
