@@ -27,16 +27,49 @@ mNavLinks.forEach(link => {
 });
 
 
+// global scroll handler
+let lastScrollY = window.scrollY;
+let ticking = false;
+
+function onScroll() {
+  lastScrollY = window.scrollY;
+  if (!ticking) {
+    window.requestAnimationFrame(updateOnScroll);
+    ticking = true;
+  }
+}
+
+function updateOnScroll() {
+  // parallax Effect
+  updateParallax(lastScrollY);
+
+  // active Section Highlight
+  updateSectionHighlight();
+
+  // timeline Progress Animation
+  smoothScrollingTimeline(lastScrollY);
+  fnOnScroll();
+
+  // image animation
+  scrollImage();
+
+  ticking = false; // allow next scroll update
+}
+
+window.addEventListener('scroll', onScroll);
+window.addEventListener('resize', fnOnResize);
+
+
 // highlight current section
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('.navbar a');
 
-window.addEventListener('scroll', () => {
+function updateSectionHighlight() {
   let currentSectionId = '';
 
   sections.forEach(section => {
     const rect = section.getBoundingClientRect();
-    const offset = window.innerHeight / 2; // Middle of screen
+    const offset = window.innerHeight / 2;  // middle of screen
 
     if (rect.top <= offset && rect.bottom >= offset) {
       currentSectionId = section.getAttribute('id');
@@ -44,12 +77,12 @@ window.addEventListener('scroll', () => {
   });
 
   navLinks.forEach(link => {
-    link.classList.remove('active');
-    if (link.getAttribute('href') === `#${currentSectionId}`) {
-      link.classList.add('active');
-    }
+    link.classList.toggle(
+      'active',
+      link.getAttribute('href') === `#${currentSectionId}`
+    );
   });
-});
+}
 
 
 // invisible header for home section
@@ -71,47 +104,20 @@ observerHeader.observe(home);
 
 
 // move home section images
-let mountain_back = document.getElementById("mountain_back");
-let mountain_moon = document.getElementById("mountain_moon");
-let mountain_middle = document.getElementById("mountain_middle");
-let mountain_front = document.getElementById("mountain_front");
-let greeting = document.getElementById("greeting");
+let mountain_back = document.getElementById('mountain_back');
+let mountain_moon = document.getElementById('mountain_moon');
+let mountain_middle = document.getElementById('mountain_middle');
+let mountain_front = document.getElementById('mountain_front');
+let greeting = document.getElementById('greeting');
 
-/*window.addEventListener('scroll', function() {
-  var value = window.scrollY;
-
+function updateParallax(value) {
+  if (!mountain_back) return;
   mountain_back.style.top = -value * 0.5 + 'px';
   mountain_moon.style.left = -value * 0.9 + 'px';
   mountain_moon.style.top = -value * 0.3 + 'px';
   mountain_middle.style.top = -value * 0.15 + 'px';
   mountain_front.style.top = value * 0.15 + 'px';
   greeting.style.top = value * 1 + 'px';
-})*/
-
-let ticking = false; // improve scrolling on smartphones
-
-function onScroll() {
-  if (!ticking) {
-    window.requestAnimationFrame(() => {
-      handleParallaxMobile();
-      ticking = false;
-    });
-    ticking = true;
-  }
-}
-
-$(window).on("scroll resize", onScroll);
-
-function handleParallaxMobile() {
-  const value = window.scrollY;
-
-  // parallax logic
-  mountain_back.style.top = -value * 0.5 + 'px';
-  mountain_moon.style.left = -value * 0.9 + 'px';
-  mountain_moon.style.top = -value * 0.3 + 'px';
-  mountain_middle.style.top = -value * 0.15 + 'px';
-  mountain_front.style.top = value * 0.15 + 'px';
-  greeting.style.top = value/2 * 1 + 'px';
 }
 
 
@@ -162,97 +168,90 @@ type();
 
 
 // timeline animation
-(function ($) {
-  $(function () {
-    $(window).on('scroll', function () {
-      fnOnScroll();
-    });
+var agTimeline = $('.js-timeline'),
+    agTimelineLine = $('.js-timeline_line'),
+    agTimelineLineProgress = $('.js-timeline_line-progress'),
+    agTimelinePoint = $('.js-timeline-card_point-box'),
+    agTimelineItem = $('.js-timeline_item'),
+    
+    agOuterHeight = $(window).outerHeight(),
+    agHeight = $(window).height(),
+    f = -1,
+    agFlag = false;
 
-    $(window).on('resize', function () {
-      fnOnResize();
-    });
+function fnOnScroll() {
+  agPosY = $(window).scrollTop();
 
-    var agTimeline = $('.js-timeline'),
-      agTimelineLine = $('.js-timeline_line'),
-      agTimelineLineProgress = $('.js-timeline_line-progress'),
-      agTimelinePoint = $('.js-timeline-card_point-box'),
-      agTimelineItem = $('.js-timeline_item'),
-      
-      agOuterHeight = $(window).outerHeight(),
-      agHeight = $(window).height(),
-      f = -1,
-      agFlag = false;
+  fnUpdateFrame();
+}
 
-    function fnOnScroll() {
-      agPosY = $(window).scrollTop();
+function fnOnResize() {
+  agPosY = $(window).scrollTop();
+  agHeight = $(window).height();
 
-      fnUpdateFrame();
-    }
+  fnUpdateFrame();
+}
 
-    function fnOnResize() {
-      agPosY = $(window).scrollTop();
-      agHeight = $(window).height();
+function fnUpdateWindow() {
+  agFlag = false;
 
-      fnUpdateFrame();
-    }
-
-    function fnUpdateWindow() {
-      agFlag = false;
-
-      agTimelineLine.css({
-        top: agTimelineItem.first().find(agTimelinePoint).offset().top - agTimelineItem.first().offset().top,
-        bottom: agTimeline.offset().top + agTimeline.outerHeight() - agTimelineItem.last().find(agTimelinePoint).offset().top
-      });
-
-      f !== agPosY && (f = agPosY, agHeight, fnUpdateProgress());
-    }
-
-    function fnUpdateProgress() {
-      var agTop = agTimelineItem.last().find(agTimelinePoint).offset().top;
-
-      i = agTop + agPosY - $(window).scrollTop();
-      a = agTimelineLineProgress.offset().top + agPosY - $(window).scrollTop();
-      n = agPosY - a + agOuterHeight / 2;
-      i <= agPosY + agOuterHeight / 2 && (n = i - a);
-      agTimelineLineProgress.css({height: n + "px"});
-
-      agTimelineItem.each(function () {
-        var agTop = $(this).find(agTimelinePoint).offset().top;
-        
-        (agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
-      })
-    }
-
-    function fnUpdateFrame() {
-      agFlag || requestAnimationFrame(fnUpdateWindow);
-      agFlag = true;
-    }
-
-
+  agTimelineLine.css({
+    top: agTimelineItem.first().find(agTimelinePoint).offset().top - agTimelineItem.first().offset().top,
+    bottom: agTimeline.offset().top + agTimeline.outerHeight() - agTimelineItem.last().find(agTimelinePoint).offset().top
   });
-}) (jQuery);
 
+  f !== agPosY && (f = agPosY, agHeight, fnUpdateProgress());
+}
 
-document.addEventListener("DOMContentLoaded", () => {
-  const items = document.querySelectorAll(".js-timeline_item");
+function fnUpdateProgress() {
+  var agTop = agTimelineItem.last().find(agTimelinePoint).offset().top;
+
+  i = agTop + agPosY - $(window).scrollTop();
+  a = agTimelineLineProgress.offset().top + agPosY - $(window).scrollTop();
+  n = agPosY - a + agOuterHeight / 2;
+  i <= agPosY + agOuterHeight / 2 && (n = i - a);
+  agTimelineLineProgress.css({height: n + 'px'});
+
+  agTimelineItem.each(function () {
+    var agTop = $(this).find(agTimelinePoint).offset().top;
+    
+    (agTop + agPosY - $(window).scrollTop()) < agPosY + .5 * agOuterHeight ? $(this).addClass('js-ag-active') : $(this).removeClass('js-ag-active');
+  })
+}
+
+function fnUpdateFrame() {
+  agFlag || requestAnimationFrame(fnUpdateWindow);
+  agFlag = true;
+}
+
+function smoothScrollingTimeline(lastScrollY) {
+  const scrollingDown = window.scrollY > lastScrollY;
+  lastScrollY = window.scrollY;
+
+  document.documentElement.dataset.scrollDirection = scrollingDown ? 'down' : 'up';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const items = document.querySelectorAll('.js-timeline_item');
 
   const observerOptions = {
-    threshold: 0.3 // trigger when 30% of item is visible
+    threshold: 0.3,
+    rootMargin: '0px 0px -10% 0px'
   };
 
-  const observer = new IntersectionObserver((entries) => {
+  const observerScrolling = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("js-ag-active");
-      } else {
-        entry.target.classList.remove("js-ag-active"); // remove when leaving
+      const scrollingDown = document.documentElement.dataset.scrollDirection === 'down';
+      if (entry.isIntersecting && scrollingDown) {
+        entry.target.classList.add('js-ag-active');
+      } else if (!entry.isIntersecting && !scrollingDown) {
+        entry.target.classList.remove('js-ag-active');
       }
     });
   }, observerOptions);
 
-  items.forEach(item => observer.observe(item));
+  items.forEach(item => observerScrolling.observe(item));
 });
-
 
 
 // skill bar animation
@@ -333,7 +332,7 @@ circles.forEach(elem => {
   let points = '';
 
   for (let i = 0; i < dots; i++) {
-    points += `<div class="points" style="--i:${i}; --rot:${rotate}deg"></div>`;
+    points += `<div class='points' style='--i:${i}; --rot:${rotate}deg'></div>`;
   }
 
   elem.innerHTML = points;
@@ -366,13 +365,13 @@ document.querySelectorAll('.circular-skill').forEach(elem => {
   }
 
   // intersection observer
-  const observer = new IntersectionObserver(entries => {
+  const observerDots = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) animateDots();
     });
   }, { threshold: 0.5 });
 
-  observer.observe(elem);
+  observerDots.observe(elem);
 
   // hover
   elem.addEventListener('mouseenter', animateDots);
@@ -380,10 +379,10 @@ document.querySelectorAll('.circular-skill').forEach(elem => {
 
 
 // scroll effect for skills image
-$(window).on("scroll", function() {
+function scrollImage() {
   var scrollTop = $(window).scrollTop();
 
-  $(".skills-img").each(function() {
+  $('.skills-img').each(function() {
     let $container = $(this);
     let containerTop = $container.offset().top;
     let windowHeight = $(window).height();
@@ -394,21 +393,21 @@ $(window).on("scroll", function() {
 
     // zoom (applied to all images equally)
     let scale = 1 + 0.9 * progress;
-    $container.find(".zoom-image").css("transform", "scale(" + scale + ")");
+    $container.find('.zoom-image').css('transform', 'scale(' + scale + ')');
 
     // image switching with custom thresholds
-    let $images = $container.find(".zoom-image");
-    $images.removeClass("active");
+    let $images = $container.find('.zoom-image');
+    $images.removeClass('active');
 
     if (progress < 0.05) {
-      $images.eq(0).addClass("active");  // top image
+      $images.eq(0).addClass('active');  // top image
     } else if (progress < 0.3) {
-      $images.eq(1).addClass("active");  // middle image
+      $images.eq(1).addClass('active');  // middle image
     } else {
-      $images.eq(2).addClass("active");  // bottom image
+      $images.eq(2).addClass('active');  // bottom image
     }
   });
-});
+}
 
 
 // avatar following cusor
@@ -421,7 +420,7 @@ $(window).on("scroll", function() {
   // deactivate for tablet/smartphones
   if (isReducedMotion || window.innerWidth <= 768) return;
 
-  const avatar = document.createElement("div");
+  const avatar = document.createElement('div');
 
   let avatarPosX = 180;
   let avatarPosY = 180;
@@ -467,18 +466,18 @@ $(window).on("scroll", function() {
   };
 
   function init() {
-    avatar.id = "avatar";
+    avatar.id = 'avatar';
     avatar.ariaHidden = true;
     avatar.style.width = `${avatarWidth}px`;
     avatar.style.height = `${avatarHeight}px`;
-    avatar.style.position = "fixed";
-    avatar.style.pointerEvents = "none";
-    avatar.style.imageRendering = "pixelated";
+    avatar.style.position = 'fixed';
+    avatar.style.pointerEvents = 'none';
+    avatar.style.imageRendering = 'pixelated';
     avatar.style.left = `${avatarPosX - avatarWidth/2}px`;
     avatar.style.top = `${avatarPosY - avatarHeight/2}px`;
     avatar.style.zIndex = 2147483647;
 
-    let avatarFile = "./assets/img/avatar_sp_s.gif"
+    let avatarFile = './assets/img/avatar_sp_s.gif'
     const curScript = document.currentScript
     if (curScript && curScript.dataset.cat) {
       avatarFile = curScript.dataset.cat
@@ -487,7 +486,7 @@ $(window).on("scroll", function() {
 
     document.body.appendChild(avatar);
 
-    document.addEventListener("mousemove", function (event) {
+    document.addEventListener('mousemove', function (event) {
       mousePosX = event.clientX;
       mousePosY = event.clientY;
     });
@@ -524,7 +523,7 @@ $(window).on("scroll", function() {
 
   function idle() {
     idleTime += 1;
-    setSprite("idle", 0);
+    setSprite('idle', 0);
     idleAnimationFrame += 1;
 
     applyForce();
@@ -547,7 +546,7 @@ $(window).on("scroll", function() {
     idleAnimationFrame = 0;
 
     if (idleTime > 1) {
-      setSprite("alert", 0);
+      setSprite('alert', 0);
       // count down after being alerted before moving
       idleTime = Math.min(idleTime, 7);
       idleTime -= 1;
@@ -556,9 +555,9 @@ $(window).on("scroll", function() {
 
     let direction;
     if (Math.abs(diffX) > Math.abs(diffY)) {
-      direction = diffX > 0 ? "W" : "E"; // left or right
+      direction = diffX > 0 ? 'W' : 'E'; // left or right
     } else {
-      direction = diffY > 0 ? "N" : "S"; // up or down
+      direction = diffY > 0 ? 'N' : 'S'; // up or down
     }
 
     setSprite(direction, frameCount);
@@ -583,17 +582,17 @@ $(window).on("scroll", function() {
         const bottom = avatarPosY + avatarHeight / 2;
 
         if (bottom < 0 || top > window.innerHeight || top < headerHeight) {
-          avatar.style.display = "none";
+          avatar.style.display = 'none';
         } else {
           if (!hideAvatar) {
-            avatar.style.display = "block";
+            avatar.style.display = 'block';
           }
         }
       } else {
         // not scrolling → header acts as wall
         avatarPosY = Math.min(Math.max(headerHeight + avatarHeight/2, avatarPosY), window.innerHeight - avatarHeight/2);
         if (!hideAvatar) {
-          avatar.style.display = "block";
+          avatar.style.display = 'block';
         }
       }
 
@@ -605,7 +604,7 @@ $(window).on("scroll", function() {
 })();
 
 // detect scrolling
-let lastScrollY = window.scrollY;
+let lastScrollYNeko = window.scrollY;
 let lastTimestamp = performance.now();
 
 let scrollVelocity = 0;
@@ -613,11 +612,11 @@ let scrollVelocity = 0;
 window.addEventListener("scroll", () => {
   const now = performance.now();
   const deltaT = (now - lastTimestamp) / 1000; // seconds
-  const deltaY = window.scrollY - lastScrollY;
+  const deltaY = window.scrollY - lastScrollYNeko;
 
   scrollVelocity = deltaY / deltaT; // pixels per second
 
-  lastScrollY = window.scrollY;
+  lastScrollYNeko = window.scrollY;
   lastTimestamp = now;
 });
 
@@ -634,7 +633,6 @@ window.addEventListener("scroll", () => {
   }, 150); // 150ms after last scroll event → no longer scrolling
 });
 
-
 let hideAvatar = false;
 const hiddenSections = new Set();
 
@@ -649,7 +647,7 @@ const observerAvatar = new IntersectionObserver((entries) => {
 
   // hide if any section is in the set
   hideAvatar = hiddenSections.size > 0;
-  avatar.style.display = hideAvatar ? "none" : "block";
+  avatar.style.display = hideAvatar ? 'none' : 'block';
 }, { threshold: 0.1 });
 
 // no avatar on home section
