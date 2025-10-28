@@ -416,9 +416,10 @@ function scrollImage() {
   const isReducedMotion =
     window.matchMedia(`(prefers-reduced-motion: reduce)`) === true ||
     window.matchMedia(`(prefers-reduced-motion: reduce)`).matches === true;
+  const isMobile = window.innerWidth <= 768;
 
   // deactivate for tablet/smartphones
-  if (isReducedMotion || window.innerWidth <= 768) return;
+  if (isReducedMotion || isMobile) return;
 
   const avatar = document.createElement('div');
 
@@ -434,6 +435,7 @@ function scrollImage() {
   let idleTime = 0;
   let idleAnimation = null;
   let idleAnimationFrame = 0;
+  let lastFrameTimestamp = 0;
 
   const avatarSpeed = 10;
   const spriteSets = {
@@ -465,6 +467,11 @@ function scrollImage() {
     ]
   };
 
+  const home = document.querySelector(".home");
+  const mobileNavbar = document.querySelector(".mobile-navbar");
+  const header = document.querySelector("header");
+  const headerHeight = header ? header.offsetHeight : 80;
+
   function init() {
     avatar.id = 'avatar';
     avatar.ariaHidden = true;
@@ -478,10 +485,10 @@ function scrollImage() {
     avatar.style.zIndex = 2147483647;
 
     let avatarFile = './assets/img/avatar_sp_s.gif'
-    const curScript = document.currentScript
+    /*const curScript = document.currentScript
     if (curScript && curScript.dataset.cat) {
       avatarFile = curScript.dataset.cat
-    }
+    }*/
     avatar.style.backgroundImage = `url(${avatarFile})`;
 
     document.body.appendChild(avatar);
@@ -493,8 +500,6 @@ function scrollImage() {
 
     window.requestAnimationFrame(onAnimationFrame);
   }
-
-  let lastFrameTimestamp;
 
   function onAnimationFrame(timestamp) {
     // stops execution if the neko element is removed from DOM
@@ -570,14 +575,14 @@ function scrollImage() {
   }
 
   // apply scroll influence
-  function applyForce(isIdle) {
+  function applyForce() {
     avatarPosY -= scrollVelocity * 0.02;  // tune multiplier for sensitivity
     scrollVelocity *= 0.9; // decay towards 0 smoothly
 
     avatarPosX = Math.min(Math.max(avatarWidth/2, avatarPosX), window.innerWidth - avatarWidth/2);
 
       if (isScrolling) {
-        // scrolling → no header wall
+        // scrolling -> no header wall
         const top = avatarPosY - avatarHeight / 2;
         const bottom = avatarPosY + avatarHeight / 2;
 
@@ -589,7 +594,7 @@ function scrollImage() {
           }
         }
       } else {
-        // not scrolling → header acts as wall
+        // not scrolling -> header acts as wall
         avatarPosY = Math.min(Math.max(headerHeight + avatarHeight/2, avatarPosY), window.innerHeight - avatarHeight/2);
         if (!hideAvatar) {
           avatar.style.display = 'block';
@@ -600,61 +605,59 @@ function scrollImage() {
     avatar.style.top = `${avatarPosY - avatarHeight/2}px`;
   }
 
-  init();
-})();
+  // detect scrolling
+  let lastScrollYNeko = window.scrollY;
+  let lastTimestamp = performance.now();
 
-// detect scrolling
-let lastScrollYNeko = window.scrollY;
-let lastTimestamp = performance.now();
+  let scrollVelocity = 0;
 
-let scrollVelocity = 0;
+  window.addEventListener("scroll", () => {
+    const now = performance.now();
+    const deltaT = (now - lastTimestamp) / 1000; // seconds
+    const deltaY = window.scrollY - lastScrollYNeko;
 
-window.addEventListener("scroll", () => {
-  const now = performance.now();
-  const deltaT = (now - lastTimestamp) / 1000; // seconds
-  const deltaY = window.scrollY - lastScrollYNeko;
+    scrollVelocity = deltaY / deltaT; // pixels per second
 
-  scrollVelocity = deltaY / deltaT; // pixels per second
-
-  lastScrollYNeko = window.scrollY;
-  lastTimestamp = now;
-});
-
-let isScrolling = false;
-let scrollTimeout;
-
-window.addEventListener("scroll", () => {
-  isScrolling = true;
-
-  // reset timer every time the user scrolls
-  clearTimeout(scrollTimeout);
-  scrollTimeout = setTimeout(() => {
-    isScrolling = false;
-  }, 150); // 150ms after last scroll event → no longer scrolling
-});
-
-let hideAvatar = false;
-const hiddenSections = new Set();
-
-const observerAvatar = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      hiddenSections.add(entry.target);
-    } else {
-      hiddenSections.delete(entry.target);
-    }
+    lastScrollYNeko = window.scrollY;
+    lastTimestamp = now;
   });
 
-  // hide if any section is in the set
-  hideAvatar = hiddenSections.size > 0;
-  avatar.style.display = hideAvatar ? 'none' : 'block';
-}, { threshold: 0.1 });
+  let isScrolling = false;
+  let scrollTimeout;
 
-// no avatar on home section
-if (home) observerAvatar.observe(home);
+  window.addEventListener("scroll", () => {
+    isScrolling = true;
 
-// no avatar on mobile header
-if (mobileNavbar) observerAvatar.observe(mobileNavbar);
+    // reset timer every time the user scrolls
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      isScrolling = false;
+    }, 150); // 150ms after last scroll event → no longer scrolling
+  });
 
-// no avatar on header
-const headerHeight = document.querySelector('header').offsetHeight;
+  let hideAvatar = false;
+  const hiddenSections = new Set();
+
+  const observerAvatar = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        hiddenSections.add(entry.target);
+      } else {
+        hiddenSections.delete(entry.target);
+      }
+    });
+
+    // hide if any section is in the set
+    hideAvatar = hiddenSections.size > 0;
+    avatar.style.display = hideAvatar ? 'none' : 'block';
+  }, { threshold: 0.1 });
+
+  // no avatar on home section
+  if (home) observerAvatar.observe(home);
+
+  // no avatar on mobile header
+  if (mobileNavbar) observerAvatar.observe(mobileNavbar);
+
+
+  init();
+})();
