@@ -737,13 +737,35 @@ section {
     text-align: left;
 }
 
-
 .models-content h4 {
   font-size: 3rem;
   margin: 2rem 0;
   font-weight: 800;
 }
-
+.models-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+}
+.cube-parent-container {
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 1 / 1; /* keeps cube square */
+  perspective: 1000px;
+}
+.cubeSwiper {
+  width: 100%;
+  height: 100%;
+}
+.cubeSwiper img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* scale images nicely */
+  border-radius: 1rem;
+}
 
 .skills {
     background-color: var(--bg-color);   

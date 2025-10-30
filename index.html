@@ -8,6 +8,8 @@
     <!-- font awesome import -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://rawcdn.githack.com/SochavaAG/example-mycode/master/_common/css/reset.css">
+    <!-- cube slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
@@ -363,9 +365,41 @@
         </div>
         </div>
 
-        <!--<div class="models-content">
+        <div class="models-content">
             <h4>3D Models</h4>
-        </div>-->
+
+             <div class="models-grid">
+                <figure class="cube-parent-container">
+                    <div class="swiper cubeSwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="assets/img/mushroom_pink_screenshot.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/mushroom_red_screenshot.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/mushroom_yellow_screenshot.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/mushroom_green_screenshot.png" /></div>
+                        </div>
+                    </div>
+                </figure>
+
+                <figure class="cube-parent-container">
+                    <div class="swiper cubeSwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="assets/img/compass.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/shovel.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/pickaxe.png" /></div>
+                            <div class="swiper-slide"><img src="assets/img/bag.png" /></div>
+                        </div>
+                    </div>
+                </figure>
+
+                <figure class="cube-parent-container">
+                    <div class="swiper cubeSwiper">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide"><img src="assets/img/t_char.png" /></div>
+                        </div>
+                    </div>
+                </figure>
+            </div>
+        </div>
     </section>
 
     <section class="skills" id="skills">
@@ -631,8 +665,8 @@
         </p>
     </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/gasp.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.0/ScrollTrigger.min.js"></script>
+    <!-- cube slider -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="assets/js/script.js"></script>
 </body>
 </html>

@@ -224,12 +224,12 @@ function fnUpdateFrame() {
 }
 
 function smoothScrollingTimeline(lastScrollY) {
-  const scrollingDown = window.scrollY > lastScrollY;
+  /*const scrollingDown = window.scrollY > lastScrollY;
   lastScrollY = window.scrollY;
-   document.documentElement.dataset.scrollDirection = scrollingDown ? 'down' : 'up';
+   document.documentElement.dataset.scrollDirection = scrollingDown ? 'down' : 'up';*/
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+/*document.addEventListener('DOMContentLoaded', () => {
   const items = document.querySelectorAll('.js-timeline_item');
 
   const observerOptions = {
@@ -249,6 +249,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }, observerOptions);
 
   items.forEach(item => observerScrolling.observe(item));
+});*/
+
+// cube slide show
+document.querySelectorAll('.cubeSwiper').forEach((el, i) => {
+  // random delay offset (between 0 and 1000ms)
+  const randomOffset = Math.random() * 1000 + i * 400;
+
+  new Swiper(el, {
+    effect: 'cube',
+    grabCursor: true,
+    speed: 1500,
+    loop: true,
+    autoplay: {
+      delay: 3000 + randomOffset, // each one starts a bit off-beat
+      pauseOnMouseEnter: true,
+      disableOnInteraction: false,
+    },
+    cubeEffect: {
+      shadow: true,
+      slideShadows: true,
+      shadowOffset: 20,
+      shadowScale: 0.94,
+    },
+  });
 });
 
 
@@ -465,9 +489,9 @@ function scrollImage() {
     ]
   };
 
-  const home = document.querySelector(".home");
-  const mobileNavbar = document.querySelector(".mobile-navbar");
-  const header = document.querySelector("header");
+  const home = document.querySelector('.home');
+  const mobileNavbar = document.querySelector('.mobile-navbar');
+  const header = document.querySelector('header');
   const headerHeight = header ? header.offsetHeight : 80;
 
   function init() {
@@ -606,7 +630,7 @@ function scrollImage() {
 
   let scrollVelocity = 0;
 
-  window.addEventListener("scroll", () => {
+  window.addEventListener('scroll', () => {
     const now = performance.now();
     const deltaT = (now - lastTimestamp) / 1000; // seconds
     const deltaY = window.scrollY - lastScrollYNeko;
@@ -620,14 +644,14 @@ function scrollImage() {
   let isScrolling = false;
   let scrollTimeout;
 
-  window.addEventListener("scroll", () => {
+  window.addEventListener('scroll', () => {
     isScrolling = true;
 
     // reset timer every time the user scrolls
     clearTimeout(scrollTimeout);
     scrollTimeout = setTimeout(() => {
       isScrolling = false;
-    }, 150); // 150ms after last scroll event → no longer scrolling
+    }, 150); // 150ms after last scroll event -> no longer scrolling
   });
 
   let hideAvatar = false;
