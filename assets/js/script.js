@@ -33,10 +33,6 @@ let ticking = false;
 
 function onScroll() {
   lastScrollY = window.scrollY;
-
-  // parallax effect -> always trigger
-  updateParallax(lastScrollY);
-
   if (!ticking) {
     window.requestAnimationFrame(updateOnScroll);
     ticking = true;
@@ -44,6 +40,9 @@ function onScroll() {
 }
 
 function updateOnScroll() {
+  // parallax effect
+  updateParallax(lastScrollY);
+
   // active section highlight
   updateSectionHighlight();
 
@@ -234,8 +233,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const items = document.querySelectorAll('.js-timeline_item');
 
   const observerOptions = {
-    threshold: 0,
-    rootMargin: '-50% 0px -50% 0px'
+    threshold: 0.3,
+    rootMargin: '0px 0px -10% 0px'
   };
 
   const observerScrolling = new IntersectionObserver((entries) => {
