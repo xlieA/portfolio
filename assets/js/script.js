@@ -33,6 +33,10 @@ let ticking = false;
 
 function onScroll() {
   lastScrollY = window.scrollY;
+
+  // parallax effect -> always trigger
+  updateParallax(lastScrollY);
+
   if (!ticking) {
     window.requestAnimationFrame(updateOnScroll);
     ticking = true;
@@ -40,13 +44,10 @@ function onScroll() {
 }
 
 function updateOnScroll() {
-  // parallax Effect
-  updateParallax(lastScrollY);
-
-  // active Section Highlight
+  // active section highlight
   updateSectionHighlight();
 
-  // timeline Progress Animation
+  // timeline progress animation
   smoothScrollingTimeline(lastScrollY);
   fnOnScroll();
 
@@ -224,17 +225,17 @@ function fnUpdateFrame() {
 }
 
 function smoothScrollingTimeline(lastScrollY) {
-  /*const scrollingDown = window.scrollY > lastScrollY;
+  const scrollingDown = window.scrollY > lastScrollY;
   lastScrollY = window.scrollY;
-   document.documentElement.dataset.scrollDirection = scrollingDown ? 'down' : 'up';*/
+   document.documentElement.dataset.scrollDirection = scrollingDown ? 'down' : 'up';
 }
 
-/*document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   const items = document.querySelectorAll('.js-timeline_item');
 
   const observerOptions = {
-    threshold: 0.3,
-    rootMargin: '0px 0px -10% 0px'
+    threshold: 0,
+    rootMargin: '-50% 0px -50% 0px'
   };
 
   const observerScrolling = new IntersectionObserver((entries) => {
@@ -249,7 +250,7 @@ function smoothScrollingTimeline(lastScrollY) {
   }, observerOptions);
 
   items.forEach(item => observerScrolling.observe(item));
-});*/
+});
 
 // cube slide show
 document.querySelectorAll('.cubeSwiper').forEach((el, i) => {
