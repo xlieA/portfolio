@@ -167,6 +167,35 @@ function type() {
 type();
 
 
+// copy email to clipboard
+document.querySelectorAll('.copy-email').forEach(link => {
+  link.addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    const email = link.dataset.email;
+
+    try {
+      await navigator.clipboard.writeText(email);
+      showToast('Email copied to clipboard!');
+    } catch (err) {
+      console.error('Copy failed', err);
+    }
+  });
+});
+
+const toast = document.getElementById('copy-toast');
+
+function showToast(message) {
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
+}
+
+
 // timeline animation
 var agTimeline = $('.js-timeline'),
     agTimelineLine = $('.js-timeline_line'),

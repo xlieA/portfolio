@@ -25,7 +25,6 @@
             <a href="#experience">Experience</a>
             <a href="#projects">Projects</a>
             <a href="#skills">Skills</a>
-            <a href="#contact">Contact</a>
         </nav>
 
         <!-- mobile version -->
@@ -38,10 +37,11 @@
             <li><a href="#experience">Experience</a></li>
             <li><a href="#projects">Projects</a></li>
             <li><a href="#skills">Skills</a></li>
-            <li><a href="#contact">Contact</a></li>
         </ul>
         </nav>
     </header>
+
+    <div id="copy-toast"></div>
 
     <section class="home" id="home">
         <img src="assets/img/mountain_back.png" id="mountain_back">
@@ -66,8 +66,8 @@
             </div>
 
             <div class="btn-group">
-                <a href= "#contact" class="btn">Request CV</a>
-                <a href="#contact" class="btn">Contact Me</a>
+                <!-- <a href= "#contact" class="btn">Request CV</a> -->
+                <a href="#" class="btn copy-email" data-email="natalie.adam@tum.de">Contact Me</a>
             </div>
         </div>
 
@@ -609,37 +609,6 @@
         </div>
     </section>
 
-    <section class="contact" id="contact">
-        <h2 class="heading">Contact <span>Me</span></h2>
-
-        <!-- https://youtu.be/iYWdtO3eT1E?si=brZrGgm-jAdPumdt -->
-        <form method="POST" action="https://formsubmit.co/natalie.adam@tum.de">
-            <div class="input-group">
-
-                <div class="input-box">
-                <input type="text" name="name" placeholder="Full Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                </div>
-
-                <div class="input-box">
-                <input type="tel" name="phone" placeholder="Phone Number">
-                <input type="text" name="subject" placeholder="Subject">
-                </div>
-
-            </div>
-
-            <div class="input-group-2">
-                <textarea name="message" placeholder="Your Message" cols="30" rows="10" required></textarea>
-                <input type="submit" value="Send Message" class="btn">
-            </div>
-
-            <!-- Optional hidden fields -->
-            <input type="hidden" name="_subject" value="New message from portfolio: {subject}">
-            <!-- <input type="hidden" name="_next" value="https://yourwebsite.com/thank-you.html"> -->
-            <input type="hidden" name="_captcha" value="false">
-        </form>
-    </section>
-
     <footer class="footer">
         <div class="social-links">
             <a href="https://github.com/xlieA" target="_blank"><i class="fa-brands fa-github"></i></a>
@@ -656,8 +625,9 @@
             </li>
 
             <li>
-                <a href="#contact">Contact Me</a>
+                <a href="#" class="copy-email" data-email="natalie.adam@tum.de">Contact Me</a>
             </li>
+
         </ul>
 
         <p class="copyright">
